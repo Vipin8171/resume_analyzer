@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Resume Analyzer - Upload</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    .card { max-width: 900px; margin: auto; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; }
+    label { display:block; margin-top: 1rem; }
+    input, textarea { width: 100%; padding: .5rem; }
+    button { margin-top: 1rem; padding: .6rem 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Upload Resume and Job Description</h2>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <label>Resume (PDF or DOCX):</label>
+      <input type="file" name="resume" accept=".pdf,.docx,.txt" required />
+
+      <label>Job Title (optional):</label>
+      <input type="text" name="jd_title" placeholder="e.g., NLP Engineer" />
+
+      <label>Job Description (text):</label>
+      <textarea name="jd_text" rows="8" placeholder="Paste the JD here" required></textarea>
+
+      <button type="submit">Analyze</button>
+    </form>
+  </div>
+</body>
+</html>

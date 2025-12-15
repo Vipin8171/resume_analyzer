@@ -1,0 +1,28 @@
+# Environments
+.env
+.env.*
+venv/
+.envrc
+.venv/
+env/
+
+# Python cache/artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+
+# Editors/OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs & debug outputs
+*.log
+results/
+
+# Misc
+*.swp

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Resume Analysis Result</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; background: #f5f5f5; padding: 2rem; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 2rem; }
+        .header h1 { color: #333; font-size: 2.5rem; }
+        .score-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; text-align: center; }
+        .score-box .score { font-size: 3rem; font-weight: bold; }
+        .score-box .label { font-size: 1.2rem; opacity: 0.9; margin-top: 0.5rem; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        .card { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .card h2 { color: #333; margin-bottom: 1rem; font-size: 1.5rem; border-bottom: 2px solid #667eea; padding-bottom: 0.5rem; }
+        .card h3 { color: #555; margin-top: 1rem; margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .badge { display: inline-block; background: #e8eaf6; color: #667eea; padding: 0.4rem 0.8rem; border-radius: 20px; margin: 0.3rem; font-size: 0.9rem; }
+        .badge.matched { background: #c8e6c9; color: #2e7d32; }
+        .badge.missing { background: #ffccbc; color: #d84315; }
+        ul, ol { margin-left: 1.5rem; margin-top: 0.5rem; }
+        li { margin-bottom: 0.5rem; line-height: 1.6; }
+        .error { background: #ffebee; color: #c62828; padding: 1rem; border-radius: 8px; border-left: 4px solid #c62828; margin-bottom: 1rem; }
+        .summary { background: #f0f7ff; padding: 1rem; border-radius: 8px; border-left: 4px solid #667eea; margin-bottom: 1rem; }
+        .button-group { text-align: center; margin-top: 2rem; }
+        a, button { display: inline-block; background: #667eea; color: white; padding: 0.8rem 1.5rem; border-radius: 8px; text-decoration: none; cursor: pointer; border: none; margin: 0.5rem; transition: background 0.3s; }
+        a:hover, button:hover { background: #764ba2; }
+        .detail-section { margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Resume Analysis Report</h1>
+        </div>
+
+        {% if groq_error %}
+        <div class="error">
+            <strong>⚠️ Note:</strong> {{ groq_error }}<br>
+            Without Groq API, basic extraction is shown below. Add your GROQ_API_KEY to .env for detailed AI analysis.
+        </div>
+        {% endif %}
+
+        <!-- Compatibility Score -->
+        {% if analysis %}
+        <div class="score-box">
+            <div class="score">{{ "%.1f"|format(analysis.compatibility_score) }}/10</div>
+            <div class="label">Compatibility Score</div>
+        </div>
+        {% endif %}
+
+        <!-- Main Grid: Resume + JD -->
+        <div class="grid">
+            <!-- Resume Section -->
+            <div class="card">
+                <h2>👤 Resume Details</h2>
+                <p><strong>Name:</strong> {{ resume.name or 'Not found' }}</p>
+                <p><strong>Email:</strong> {{ resume.email or 'Not found' }}</p>
+                <p><strong>Phone:</strong> {{ resume.phone or 'Not found' }}</p>
+
+                {% if resume.online_profiles %}
+                <h3>Online Profiles:</h3>
+                <ul>
+                {% for p in resume.online_profiles %}
+                    <li><a href="{{ p.url }}" target="_blank">{{ p.label }}</a></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+
+                {% if resume.experience_summary %}
+                <h3>Experience Summary:</h3>
+                <p>{{ resume.experience_summary }}</p>
+                {% endif %}
+
+                {% if resume.skills %}
+                <h3>Skills ({{ resume.skills|length }}):</h3>
+                {% for s in resume.skills %}
+                    <span class="badge">{{ s }}</span>
+                {% endfor %}
+                {% endif %}
+
+                {% if resume.projects %}
+                <h3>Projects:</h3>
+                <ul>
+                {% for proj in resume.projects %}
+                    <li><strong>{{ proj.name }}</strong><br>Tech: {{ proj.technologies|join(', ') }}</li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <!-- JD Section -->
+            <div class="card">
+                <h2>📝 Job Description</h2>
+                <p><strong>Title:</strong> {{ jd.title or 'Not specified' }}</p>
+                <h3>Description:</h3>
+                <p style="white-space: pre-wrap; line-height: 1.6;">{{ jd.description }}{% if jd.description|length > 500 %}{% endif %}</p>
+            </div>
+        </div>
+
+        <!-- Analysis Results (if available) -->
+        {% if analysis %}
+        <div class="card detail-section">
+            <h2>🎯 Detailed Analysis</h2>
+
+            {% if analysis.overall_assessment %}
+            <div class="summary">
+                <strong>Summary:</strong> {{ analysis.overall_assessment }}
+            </div>
+            {% endif %}
+
+            <!-- Matched Skills -->
+            {% if analysis.matched_skills %}
+            <h3>✅ Matched Skills ({{ analysis.matched_skills|length }}):</h3>
+            {% for skill in analysis.matched_skills %}
+                <span class="badge matched">{{ skill }}</span>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Missing Skills -->
+            {% if analysis.missing_skills %}
+            <h3>⚠️ Missing Skills ({{ analysis.missing_skills|length }}):</h3>
+            {% for skill in analysis.missing_skills %}
+                <span class="badge missing">{{ skill }}</span>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Strengths -->
+            {% if analysis.strengths %}
+            <h3>💪 Your Strengths:</h3>
+            <ul>
+            {% for item in analysis.strengths %}
+                <li>{{ item }}</li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+
+            <!-- Gaps -->
+            {% if analysis.gaps %}
+            <h3>📌 Areas to Improve:</h3>
+            <ul>
+            {% for item in analysis.gaps %}
+                <li>{{ item }}</li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+
+            <!-- Recommendations -->
+            {% if analysis.recommendations %}
+            <h3>💡 Recommendations:</h3>
+            <ul>
+            {% for item in analysis.recommendations %}
+                <li>{{ item }}</li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="card detail-section">
+            <p style="text-align: center; color: #999;">Add a job description above to see AI-powered analysis.</p>
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <a href="/">← Back to Upload</a>
+            <button onclick="window.print()">🖨️ Print Report</button>
+        </div>
+    </div>
+</body>
+</html>
