@@ -1,6 +1,7 @@
 # Resume Analyzer
 
 FastAPI-based resume analysis tool that parses PDF/DOCX/TXT resumes, extracts structured fields (name, contact, education, projects, skills, achievements, online profiles), and runs Groq LLM analysis for fit against a job description.
+<img width="1919" height="1079" alt="Screenshot 2025-12-13 232254" src="https://github.com/user-attachments/assets/cf94a1d8-24c0-467e-9032-5bdbce67a4fc" />
 
 ## Features
 - PDF (pdfplumber) and DOCX (python-docx) parsing with hyperlink extraction
