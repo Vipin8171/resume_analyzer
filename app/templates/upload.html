@@ -2,30 +2,280 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Resume Analyzer - Upload</title>
+  <title>Resume Analyzer - AI-Powered Analysis</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; }
-    .card { max-width: 900px; margin: auto; padding: 1.5rem; border: 1px solid #ddd; border-radius: 8px; }
-    label { display:block; margin-top: 1rem; }
-    input, textarea { width: 100%; padding: .5rem; }
-    button { margin-top: 1rem; padding: .6rem 1rem; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 2rem;
+    }
+    .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .header p { font-size: 1.1rem; opacity: 0.9; }
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      margin-bottom: 1.5rem;
+    }
+    .card h2 {
+      color: #333;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 0.5rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    input[type="file"],
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    input[type="file"]:hover,
+    input[type="text"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    textarea { resize: vertical; min-height: 150px; }
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    button {
+      flex: 1;
+      min-width: 150px;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-analyze {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .btn-analyze:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+    .btn-interview {
+      background: #28a745;
+      color: white;
+    }
+    .btn-interview:hover {
+      background: #218838;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(40, 167, 69, 0.4);
+    }
+    .hint {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.3rem;
+    }
+    .feature-box {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+    }
+    .feature-box h3 {
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    .feature-list {
+      list-style: none;
+      padding-left: 0;
+    }
+    .feature-list li {
+      padding: 0.3rem 0;
+      color: #555;
+    }
+    .feature-list li:before {
+      content: "✓ ";
+      color: #28a745;
+      font-weight: bold;
+      margin-right: 0.5rem;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>Upload Resume and Job Description</h2>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-      <label>Resume (PDF or DOCX):</label>
-      <input type="file" name="resume" accept=".pdf,.docx,.txt" required />
+  <div class="container">
+    <div class="header">
+      <h1>📊 Resume Analyzer</h1>
+      <p>AI-powered resume analysis & mock interview preparation</p>
+    </div>
 
-      <label>Job Title (optional):</label>
-      <input type="text" name="jd_title" placeholder="e.g., NLP Engineer" />
+    <!-- Upload Card -->
+    <div class="card">
+      <h2>Step 1: Upload Your Resume</h2>
+      <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="resume">Resume File (PDF, DOCX, or TXT):</label>
+          <input type="file" id="resume" name="resume" accept=".pdf,.docx,.txt" required />
+          <div class="hint">📄 Supported formats: PDF, DOCX, TXT</div>
+        </div>
 
-      <label>Job Description (text):</label>
-      <textarea name="jd_text" rows="8" placeholder="Paste the JD here" required></textarea>
+        <div class="form-group">
+          <label for="jd_title">Job Title (optional):</label>
+          <input type="text" id="jd_title" name="jd_title" placeholder="e.g., Senior Data Scientist" />
+        </div>
 
-      <button type="submit">Analyze</button>
-    </form>
+        <div class="form-group">
+          <label for="jd_text">Job Description:</label>
+          <textarea id="jd_text" name="jd_text" placeholder="Paste the complete job description here..." required></textarea>
+          <div class="hint">📋 Include responsibilities, requirements, and qualifications</div>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn-analyze">
+            🔍 Analyze Resume
+          </button>
+          <button type="button" class="btn-interview" onclick="toggleInterview()">
+            🎤 Start AI Interview
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Interview Card (Hidden by default) -->
+    <div class="card" id="interviewCard" style="display:none;">
+      <h2>🎤 AI Mock Interview</h2>
+      <p style="color: #666; margin-bottom: 1rem;">Start a 10-minute AI-powered mock interview to practice and get feedback on your interview skills.</p>
+      <form id="interviewForm" action="/upload" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="resume2">Resume File:</label>
+          <input type="file" id="resume2" name="resume" accept=".pdf,.docx,.txt" required />
+        </div>
+
+        <div class="form-group">
+          <label for="jd_title2">Job Title (optional):</label>
+          <input type="text" id="jd_title2" name="jd_title" placeholder="e.g., Senior Data Scientist" />
+        </div>
+
+        <div class="form-group">
+          <label for="jd_text2">Job Description:</label>
+          <textarea id="jd_text2" name="jd_text" placeholder="Paste the job description..." required></textarea>
+        </div>
+
+        <div class="button-group">
+          <button type="button" class="btn-interview" onclick="startInterview()">
+            ▶️ Begin Interview
+          </button>
+          <button type="button" class="btn-analyze" onclick="toggleInterview()">
+            ✕ Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Features Card -->
+    <div class="card">
+      <h2>📌 Features</h2>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="feature-box">
+          <h3>📊 Resume Analysis</h3>
+          <ul class="feature-list">
+            <li>Skills matching</li>
+            <li>Experience alignment</li>
+            <li>Gap identification</li>
+            <li>Improvement tips</li>
+          </ul>
+        </div>
+        <div class="feature-box">
+          <h3>🎤 AI Interview</h3>
+          <ul class="feature-list">
+            <li>10-minute session</li>
+            <li>Voice-based Q&A</li>
+            <li>Adaptive questions</li>
+            <li>Performance scoring</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    function toggleInterview() {
+      const card = document.getElementById('interviewCard');
+      card.style.display = card.style.display === 'none' ? 'block' : 'none';
+      if (card.style.display === 'block') {
+        card.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function startInterview() {
+      const resume = document.getElementById('resume2').files[0];
+      const jdTitle = document.getElementById('jd_title2').value;
+      const jdText = document.getElementById('jd_text2').value;
+
+      if (!resume) {
+        alert('Please select a resume file');
+        return;
+      }
+
+      if (!jdText) {
+        alert('Please enter a job description');
+        return;
+      }
+
+      // Parse resume and prepare for interview
+      const formData = new FormData();
+      formData.append('resume', resume);
+      formData.append('jd_title', jdTitle || 'Interview');
+      formData.append('jd_text', jdText);
+      formData.append('is_interview', 'true');
+
+      // Submit to upload endpoint with interview flag
+      const form = document.getElementById('interviewForm');
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'is_interview';
+      input.value = 'true';
+      form.appendChild(input);
+      form.submit();
+    }
+
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+      // Sync resume file between forms
+      const resume1 = document.getElementById('resume').files[0];
+      const jdTitle1 = document.getElementById('jd_title').value;
+      const jdText1 = document.getElementById('jd_text').value;
+
+      if (resume1) {
+        const dt = new DataTransfer();
+        dt.items.add(resume1);
+        document.getElementById('resume2').files = dt.files;
+        document.getElementById('jd_title2').value = jdTitle1;
+        document.getElementById('jd_text2').value = jdText1;
+      }
+    });
+  </script>
 </body>
 </html>
